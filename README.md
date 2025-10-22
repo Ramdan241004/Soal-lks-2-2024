@@ -34,14 +34,19 @@ Mereka menginginkan kamu sebagai DevOps Engineer untuk membangun arsitektur Proo
 11. Pastikan semua resource dibuat dan dikonfigurasi di region **us-east-1**.
 
 ## Arsitektur 
-(Architecture)(Bagian ini di dokumen asli hanya berisi diagram, jadi tidak ada teks yang perlu diterjemahkan.)
+![Infr Diaggram](https://github.com/Ramdan241004/Soal-lks-2-2024/blob/main/Aaa.png) 
 
 ## Detail Aplikasi (Application Details)
 Aplikasi Voting App dikembangkan oleh dockersamples. Voting App terdiri dari 3 aplikasi utama dan 2 komponen pendukung. Tiga aplikasi utama: **Vote App** — dikembangkan menggunakan Python. **Result App** — dikembangkan menggunakan NodeJS. **Worker App** — dikembangkan menggunakan .NET.
 
+![Infr Diaggram](https://github.com/Ramdan241004/Soal-lks-2-2024/blob/main/UUID%E2%80%99s.png) 
+
 Agar dapat berjalan dengan baik, Voting App memerlukan dua komponen pendukung, yaitu: PostgreSQL (sebagai database), dan Redis (sebagai in-memory data store). Dalam proyek ini, Voting App akan dijalankan di dua lingkungan, yaitu: Development, Production. Untuk Development, aplikasi Voting dapat diakses melalui Load Balancer bernama lks-lb-dev pada port 80 dan 81. Sedangkan untuk Production, dapat diakses melalui Load Balancer bernama lks-lb-prod dengan port yang sama (80 dan 81).
 
 ## Siklus Hidup Deployment (Deployment LifeCycle)
+
+![Infr Diaggram](https://github.com/Ramdan241004/Soal-lks-2-2024/blob/main/Aaaa.png) 
+
 Semua layanan harus dideploy secara berkelanjutan mengikuti versi dari layanan masing-masing. Seluruh layanan harus dideploy secara otomatis ke: Docker Swarm Cluster di EC2 instances untuk lingkungan Development, dan ECS (Elastic Container Service) untuk lingkungan Production. Kamu harus menggunakan GitHub Actions untuk mengotomatisasi proses deployment. Pipeline akan berjalan secara otomatis ketika ada perubahan kode di: **branch dev** → untuk Development, **branch prod** → untuk Production Repositori publik yang digunakan adalah GitHub Service, dan setiap repositori memiliki Dockerfile untuk membuat image Docker. Kamu dapat membuat Docker image menggunakan file tersebut — baca deskripsi di setiap repositori untuk memahami cara menginstal dan membuat image. Setiap image harus diunggah ke private registry dengan tag versi terbaru serta nomor versi kodemisalnya:
 
 **ACCOUNT_ID**.dkr.ecr.us-east-1.amazonaws.com/lks-voting-image:**vote-{dev/prod}-latest**
