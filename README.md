@@ -204,3 +204,78 @@ Amazon SNS (Simple Notification Service) adalah layanan terkelola sepenuhnya yan
 3. Publikasikan pesan berikut ke dalam topik:
 **Subject**: Hello from <Provinsi>!
 **Message Body** : New version of The Voting App from <Provinsi> is Released !!
+
+# Aplikasi Voting Contoh (Example Voting App)
+
+Sebuah aplikasi terdistribusi sederhana yang berjalan di berbagai container Docker.
+
+## Memulai (Getting Started)
+
+Unduh [Docker Desktop](https://www.docker.com/products/docker-desktop) untuk Mac atau Windows. [Docker Compose](https://docs.docker.com/compose) akan otomatis terinstal bersamaan. Untuk Linux, pastikan kamu memiliki versi terbaru dari [Compose](https://docs.docker.com/compose/install/)..
+
+Solusi ini menggunakan Python, Node.js, .NET, dengan Redis sebagai sistem pesan (messaging) dan Postgres sebagai penyimpanan (storage).
+
+Jalankan perintah berikut di direktori ini untuk membangun dan menjalankan aplikasi:
+
+```shell
+docker compose up
+```
+
+Aplikasi vote akan berjalan di [http://localhost:5000](http://localhost:5000)., dan aplikasi result akan berjalan di [http://localhost:5001](http://localhost:5001)..
+
+Sebagai alternatif, jika kamu ingin menjalankannya di [Docker Swarm](https://docs.docker.com/engine/swarm/),, pastikan kamu sudah memiliki swarm. Jika belum, jalankan perintah berikut:
+
+```shell
+docker swarm init
+```
+
+Setelah kamu memiliki swarm, jalankan perintah ini di direktori yang sama:
+
+```shell
+docker stack deploy --compose-file docker-stack.yml vote
+```
+
+## Menjalankan Aplikasi di Kubernetes
+
+Folder k8s-specifications berisi file YAML spesifikasi layanan-layanan dalam Voting App.
+
+Jalankan perintah berikut untuk membuat deployment dan service: Perintah ini akan membuat resource di namespace kamu saat ini (`default` jika kamu belum mengubahnya).
+
+```shell
+kubectl create -f k8s-specifications/
+```
+
+Aplikasi web `vote` akan tersedia di port 31000 pada setiap host di cluster, dan aplikasi web `result` akan tersedia di port 31001.
+
+Untuk menghapus semua resource tersebut, jalankan:
+
+```shell
+kubectl delete -f k8s-specifications/
+```
+
+## Arsitektur (Architecture)
+
+![Infr Diaggram](https://github.com/Ramdan241004/Soal-lks-2-2024/blob/main/UUID%E2%80%99s.png) 
+
+* Sebuah aplikasi web front-end dalam [Python](/vote) yang memungkinkan pengguna memilih antara dua opsi.
+* Sebuah [Redis](https://hub.docker.com/_/redis/) yang mengumpulkan suara baru.
+* Sebuah worker dalam [.NET](/worker/) yang mengambil (mengonsumsi) suara dari Redis dan menyimpannya di…
+* Sebuah [Postgres](https://hub.docker.com/_/postgres/) database yang disimpan di dalam Docker volume.
+* Sebuah aplikasi web [Node.js](/result) yang menampilkan hasil voting secara waktu nyata (real time).
+
+## Menggunakan PostgreSQL dan Redis Eksternal
+
+1. Ubah informasi host Redis di file `vote/app.py` dan `worker/Program.cs`.
+2. Ubah kredensial Postgres di file `worker/Program.cs` dan `result/server.js`.
+
+Jika kamu memiliki waktu lebih dan sangat peduli terhadap keamanan kredensial Postgres,
+kamu dapat menyimpannya di dalam variabel atau secret manager lainnya.
+
+## Catatan (Notes)
+
+Aplikasi voting ini hanya menerima satu suara per browser klien.
+Aplikasi tidak akan mencatat suara tambahan jika pengguna sudah pernah memberikan suara dari browser yang sama.
+
+Aplikasi ini bukan contoh dari aplikasi terdistribusi yang sempurna secara arsitektur,
+melainkan contoh sederhana dari berbagai jenis komponen dan bahasa pemrograman yang mungkin kamu temui
+(seperti antrian, data persisten, dsb.), serta bagaimana cara menanganinya secara dasar di dalam Docker.
